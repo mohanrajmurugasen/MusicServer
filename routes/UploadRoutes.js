@@ -39,6 +39,7 @@ const upload = multer({
 
 router.post("/upload", upload, async (req, res) => {
   const upload = {
+    userId: req.body.userId,
     tittle: req.body.tittle,
     audio: req.files.audio[0].filename,
     image: req.files.image[0].filename,
@@ -62,6 +63,7 @@ router.post("/upload", upload, async (req, res) => {
     cline: req.body.cline,
     category: req.body.category,
     genre: req.body.genre,
+    publish: req.body.publish,
   };
 
   await db.upload
@@ -86,8 +88,15 @@ router.post("/upload", upload, async (req, res) => {
     });
 });
 
-router.post("/getAllUploads", async (req, res) => {
-  await db.upload.findAll().then((data) => res.send(data));
+router.get("/getAllUploads/:userId", async (req, res) => {
+  await db.upload
+    .findAll({
+      where: {
+        userId: req.params.userId,
+      },
+    })
+    .then((data) => res.send(data))
+    .catch((err) => res.send(err.message));
 });
 
 module.exports = router;
